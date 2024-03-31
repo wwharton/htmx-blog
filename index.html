@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Dark Project</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="https://unpkg.com/htmx.org"></script>
+    </head>
+    <body>
+        <header>
+            <nav>
+                <div class="header-container">
+                    <div class="white-w-box">W</div>
+                    <h1 style="margin-right: 5px">My Dark Project</h1>
+                    <a href="#" 
+                       hx-get="/posts.html"
+                       hx-trigger="click"
+                       hx-target="#content"
+                       hx-push-url="/index.html">
+                       home
+                    </a>
+                </div>
+            </nav>
+        </header>
+        <main>
+
+        <!-- Content goes here -->
+
+        <section id="content">
+            <!-- The below should auto load the Posts context and call it index -->
+            <div
+            href="index.html" 
+            hx-get="posts.html" 
+            hx-trigger="load" 
+            hx-target="#content"
+            hx-push-url="/index.html" 
+            hx-push-url="true">
+            </div>
+        </section>
+
+        <!-- Content ends here -->
+
+        </main>
+        <footer>
+            <p>A Simple HTMX Blog © 2024</p>
+        </footer>
+    </body>
+</html>
