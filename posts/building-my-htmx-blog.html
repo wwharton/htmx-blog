@@ -8,39 +8,33 @@
         <script src="https://unpkg.com/htmx.org"></script>
     </head>
     <body>
-        <article>
-            <h1>Building a Blog with HTMX and CSS</h1>
-            <p>Date: Mar 30, 2024. Author: Will</p>
-            <p>When I set out to create my own blog from scratch, I was looking for a way to build something simple, yet interactive and modern without diving too deep into complex frameworks or server-side rendering. That's when I discovered HTMX and CSS could work together seamlessly to achieve exactly what I needed.</p>
-            
-            <h2>The Power of HTMX</h2>
-            <p>HTMX is a JavaScript library that allows you to access AJAX, CSS Transitions, WebSockets, and more, using HTML attributes. It's incredibly lightweight and easy to use, making it perfect for adding interactivity to web pages without writing complex JavaScript code. For my blog, I used HTMX to handle form submissions, content loading, and dynamic updates all with simple HTML.</p>
-            
-            <h2>Styling with CSS</h2>
-
-
-            <a href="media/css_htmx.html" 
-                hx-get="media/css_htmx.html" 
-                hx-target="#content" 
-                hx-trigger="click"
-                hx-url-push="posts/building-my-htmx-blog.html"
-            >
-                <img src="media/css_htmx.png" alt="Thumbnail of image" class="image-thumbnail">
-            </a>
-
-
-            <p>CSS played a crucial role in the visual design of my blog. It allowed me to create a clean, responsive design that works on all devices. I utilized Flexbox for layout design, ensuring that the blog posts, header, and navigation elements are well-organized and adaptable to various screen sizes. Custom properties and media queries helped in applying themes and adjusting layouts dynamically.</p>
-            
-            <h2>Creating the Blog Structure</h2>
-            <p>The blog structure is straightforward. The main page lists blog posts with summaries. Each post can be clicked to view the full content. I used HTMX to make these links load the post content into the main content area without a full page reload, creating a single-page application (SPA) feel without the complexity.</p>
-            
-            <h2>HTMX in Action</h2>
-            <p>One of the first features I implemented with HTMX was loading blog posts dynamically. By simply adding `hx-get="post1.html"` and `hx-trigger="click"` to a link, I could fetch the post's HTML content and display it within a specified target area. This not only improved the user experience but also reduced the load on the server.</p>
-            
-            <h2>Styling Challenges and Triumphs</h2>
-            <p>Styling the blog was both a challenge and a rewarding process. Achieving a layout that was both aesthetically pleasing and functional on mobile devices required a lot of tweaking, especially with CSS grid and flex properties. However, through experimentation and leveraging CSS's powerful selectors and properties, I was able to create a design that I'm proud of.</p>
-            
-            <p>In conclusion, using HTMX and CSS to build my blog from scratch was a fantastic learning experience. It taught me a lot about web development, and I ended up with a fast, responsive, and interactive blog that met all my requirements. I highly encourage other developers to explore these tools and consider them for their projects.</p>
-        </article>
+        <header>
+            <nav>
+                <div class="header-container">
+                    <div class="white-w-box">W</div>
+                    <h1 style="margin-right: 5px">My Dark Project</h1>
+                    <a href="#" 
+                       hx-get="/posts.html"
+                       hx-trigger="click"
+                       hx-target="#content"
+                       hx-push-url="/posts.html">
+                       home
+                    </a>
+                </div>
+            </nav>
+        </header>
+        <main>
+            <section id="content">
+                <!-- The below should auto load the Posts context and call it index -->
+                <div
+                href="/posts/building-my-htmx-blog.html" 
+                hx-get="/posts/building-my-htmx-blog-content.html" 
+                hx-trigger="load" 
+                hx-target="#content"
+                hx-push-url="/posts/building-my-htmx-blog.html" 
+                hx-push-url="true">
+                </div>
+            </section>
+        </main>
     </body>
 </html>
