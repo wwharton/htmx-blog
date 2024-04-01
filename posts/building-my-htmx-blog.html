@@ -12,7 +12,7 @@
         <!-- Navigation Container -->
         <section id="navigation">
             <div
-                hx-get="/navigation.html" 
+                hx-get="/htmx-blog/navigation.html" 
                 hx-trigger="load" 
                 hx-target="#navigation">
             </div>
@@ -25,10 +25,10 @@
                 <!-- The below should auto load the Posts context and call it index -->
                 <div
                 href="/posts/building-my-htmx-blog.html" 
-                hx-get="/posts/building-my-htmx-blog-content.html" 
+                hx-get="/htmx-blog/posts/building-my-htmx-blog-content.html" 
                 hx-trigger="load" 
                 hx-target="#content"
-                hx-push-url="/posts/building-my-htmx-blog.html" 
+                hx-push-url="/htmx-blog/posts/building-my-htmx-blog.html" 
                 hx-push-url="true">
                 </div>
             </section>
