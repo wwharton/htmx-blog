@@ -19,19 +19,18 @@
         </section>
         <main>
         <!-- End Navigation Container -->
-
         <main>
             <section id="content">
-                <!-- The below should auto load the Posts context and call it index -->
-                <div
-                href="/posts/building-my-htmx-blog.html" 
-                hx-get="/posts/building-my-htmx-blog-content.html" 
-                hx-trigger="load" 
-                hx-target="#content"
-                hx-push-url="/posts/building-my-htmx-blog.html" 
-                hx-push-url="true">
-                </div>
+                 <!-- The below should auto load the Posts context and call it index -->
+                 <div
+                 hx-get="/utilities/escape-content.html" 
+                 hx-trigger="load" 
+                 hx-target="#content"
+                 hx-push-url="/utilities/escape.html" 
+                 hx-push-url="true">
+                 </div>
+                
             </section>
-        </main>
+        </main> 
     </body>
 </html>

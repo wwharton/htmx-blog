@@ -8,7 +8,6 @@
         <script src="https://unpkg.com/htmx.org"></script>
     </head>
     <body>
-
         <!-- Navigation Container -->
         <section id="navigation">
             <div
@@ -19,21 +18,19 @@
         </section>
         <main>
         <!-- End Navigation Container -->
-
         <!-- Content Container -->
         <section id="content">
-            <!-- The below should auto load the Posts context and call it index -->
+
             <div
-            hx-get="posts.html" 
+            hx-get="utilities-content.html" 
             hx-trigger="load" 
             hx-target="#content"
-            hx-push-url="/posts.html" 
+            hx-push-url="/utilities.html" 
             hx-push-url="true">
             </div>
+
         </section>
-
         <!-- End Content Container -->
-
         </main>
         <footer>
             <p>A Simple HTMX Blog © 2024</p>

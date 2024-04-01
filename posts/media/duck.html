@@ -1,0 +1,11 @@
+<!-- Re-Insert the image below so that when this html file loads and replaces the previous section, we still have continuity and represent this image on the page-->
+<img src="media/duck.png" style="max-width: 20%" alt="duck thumbnail" class="image-thumbnail">
+<div class="full-image-container">
+    <img src="media/duck.png" alt="Full size image" class="full-image">
+    <button 
+        hx-get="media/duck_thumbnail.html" 
+        hx-target="#test-thumbnail" 
+        hx-trigger="click, keyup[key=='Escape'] from:body">
+        X
+    </button>
+</div>

@@ -2,34 +2,240 @@
 <article>
     <h1>Building a Blog with HTMX and CSS</h1>
     <p>Date: Mar 30, 2024. Author: Will</p>
-    <p>When I set out to create my own blog from scratch, I was looking for a way to build something simple, yet interactive and modern without diving too deep into complex frameworks or server-side rendering. That's when I discovered HTMX and CSS could work together seamlessly to achieve exactly what I needed.</p>
-    
-    <h2>The Power of HTMX</h2>
-    <p>HTMX is a JavaScript library that allows you to access AJAX, CSS Transitions, WebSockets, and more, using HTML attributes. It's incredibly lightweight and easy to use, making it perfect for adding interactivity to web pages without writing complex JavaScript code. For my blog, I used HTMX to handle form submissions, content loading, and dynamic updates all with simple HTML.</p>
-    
-    <h2>Styling with CSS</h2>
 
+    <p>While kicking off this project on a whim, I first identified a few key needs: </p>
+    <ul>
+        <li>Display Text, Code, Images</li>
+        <li>Spa-ish User Experience</li>
+        <li>Linkable articles</li>
+    </ul>
 
-    <a href="media/css_htmx.html" 
-        hx-get="media/css_htmx.html" 
+    <p>Next, to keep things from getting out of hand, a few constraints:</p>
+    <ul>
+        <li>Limit myself to HTML, CSS, and only import HTMX</li>
+        <li>No backend</li>
+        <li>Be creative with tooling/workflow scripting & codegen</li>
+    </ul>
+
+    <h2>Creating the Blog Structure</h2>
+
+    <p>Okay, I know enough about html and css to get a page to display text and images (I learned img src="" from Myspace!)</p>
+    <p>Next up is code blocks</p>
+    <pre><code class="language-html">&lt;div&gt;Sample HTML code block&lt;/div&gt;</code></pre>
+    <p>Kind of a pain. With simple html we have to escape everything, there's not a super simple block quote/escape solution from what I can see. I'll return to this later.</p>
+
+    <p>That seems like I have enough to get started. My project directory is pretty simple. root, /posts, /posts/media. This should largely look like a static site, and it could be, but I want to use HTMX to make it feel like an SPA.</p>
+ 
+    <h3>hx-get</h3>
+    <p>There is a bit of a trick to playing with the file architecture and the htmx routing. `hx-get=` will swap content in a section. It's easy to get started with this, conceptually you're just swapping chunks of html, but I quickly encountered my first trouble implementing navigation and trying to return to the home page.</p>
+    
+    <a hx-get="media/duplicate_header.html" 
         hx-target="#content" 
         hx-trigger="click"
         hx-url-push="posts/building-my-htmx-blog.html"
     >
-        <img src="media/css_htmx.png" alt="Thumbnail of image" class="image-thumbnail">
+        <img src="media/duplicate_header.png" alt="Duplicate Header" class="image-thumbnail">
     </a>
 
+    <p>This was the result of nested, dynamic loading of the html content. 
+        If I was on a blog post page with its own navigation content, and then I "navigated back" to the index page (which is actually just re-loading the content section), it would include, of course, the whole index.html page ~ including its navigation bar!
+         After thinking about this, I came up with a cheeky solution: html controller pages for any url I want to be able to link to.
+        This means that any page I want to be able to link to will require a standard template wrapping its content.
+    </p>
+    <pre>
+        <code class="language-html">
+            &lt;!DOCTYPE html&gt;
+            &lt;html lang=&quot;en&quot;&gt;
+                &lt;head&gt;
+                    &lt;meta charset=&quot;UTF-8&quot;&gt;
+                    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+                    &lt;title&gt;My Dark Project&lt;/title&gt;
+                    &lt;link rel=&quot;stylesheet&quot;&gt;
+                    &lt;script src=&quot;https://unpkg.com/htmx.org&quot;&gt;&lt;/script&gt;
+                &lt;/head&gt;
+                &lt;body&gt;
+                    &lt;!-- Navigation Container --&gt;
+                    &lt;section id=&quot;navigation&quot;&gt;
+                        &lt;div
+                            hx-get=&quot;navigation.html&quot; 
+                            hx-trigger=&quot;load&quot; 
+                            hx-target=&quot;#navigation&quot;&gt;
+                        &lt;/div&gt;
+                    &lt;/section&gt;
+                    &lt;main&gt;
+                    &lt;!-- End Navigation Container --&gt;
+                    &lt;!-- Content Container --&gt;
+                    &lt;section id=&quot;content&quot;&gt;
+            
+                        &lt;!-- Update this code block --&gt;
+                        &lt;div
+                        hx-get=&quot;container-content.html&quot;
+                        hx-trigger=&quot;load&quot; 
+                        hx-target=&quot;#content&quot;
+                        hx-push-url=&quot;/container.html&quot; 
+                        hx-push-url=&quot;true&quot;&gt;
+                        &lt;/div&gt;
+                        &lt;!-- End of aforementioned code block --&gt;
+            
+                    &lt;/section&gt;
+                    &lt;!-- End Content Container --&gt;
+                    &lt;/main&gt;
+                    &lt;footer&gt;
+                        &lt;p&gt;A Simple HTMX Blog © 2024&lt;/p&gt;
+                    &lt;/footer&gt;
+                &lt;/body&gt;
+            &lt;/html&gt;
+        </code> 
+    </pre>
+    <p>This ensures that if I link directly to any main, intentionally navigable page on my blog, the user will be captured in the main template "container" and will otherwise navigate via dynamic htmx loading of the "content" section.
+        This is of course not a perfect solution though ~ now I have .html content pages that could be accessed (like building-my-htmx-blog-content.html) without any styling ~ but that is a compromise I am willing to make for this jank project. 
+        Despite the weirdness of being able to access these non-container pages directly with no styling or navigation, and the jankiness of these captive landing pages that all share an identical ingress template (copy and pasted no less!) into my HTMX dynamic loading pathways, 
+        I think this solution is fun.
+    </p>
 
-    <p>CSS played a crucial role in the visual design of my blog. It allowed me to create a clean, responsive design that works on all devices. I utilized Flexbox for layout design, ensuring that the blog posts, header, and navigation elements are well-organized and adaptable to various screen sizes. Custom properties and media queries helped in applying themes and adjusting layouts dynamically.</p>
+    <h3>The Code Block</h3>
+    <p>Formatting code blocks for direct html display is a pain. So, I caved and built my first utility to support me. And out of a desire to have more than one link in the nav, I made it an accessible utility!</p>
+
+    <a hx-get="media/codeblock_utility.html" 
+        hx-target="#content" 
+        hx-trigger="click"
+        hx-url-push="posts/building-my-htmx-blog.html"
+    >
+        <img src="media/codeblock_utility.png" style="max-width: 30%" alt="Codeblock Utility" class="image-thumbnail">
+    </a>
+
+    <p>I am pretty happy with this as both a quick script and a first little script utility to include on the page. 
+        Without something like this, trying to include code samples would be very cumbersome</p>
+
+    <h3>The Lightbox</h3>
+    <p>The lightbox is pretty jank. I'll roll with it for this post, but I do not think I will generally continue with the pattern, except for where the use of a thumbnail/lightbox serves an explicit purpose. 
+        To achieve the affect, again we're doing some clever dynamic loading with htmx-get.
+    </p>
+
+    <a hx-get="media/lightbox_img.html" 
+        hx-target="#content" 
+        hx-trigger="click"
+        hx-url-push="posts/building-my-htmx-blog.html"
+    >
+        <img src="media/lightbox_img.png" alt="Codeblock Utility" class="image-thumbnail">
+    </a>
+
+    <p>Instead of a simple image tag, now we drop in an htmx enriched anchor tag. I don't think it really matters what kind of html element contains your hx-get directive, but semantically anchor makes sense enough to me!</p>
+    <b>HTMX For Lightbox Loader</b>
+    <pre>
+        <code class="language-html">
+            &lt;a hx-get=&quot;media/duplicate_header.html&quot; 
+                hx-target=&quot;#content&quot; 
+                hx-trigger=&quot;click&quot;
+                hx-url-push=&quot;posts/building-my-htmx-blog.html&quot;
+            &gt;
+                &lt;img src=&quot;media/duplicate_header.png&quot; alt=&quot;Duplicate Header&quot; class=&quot;image-thumbnail&quot;&gt;
+            &lt;/a&gt;
+        </code>
+    </pre>
+
+    <b>media/duplicate_header.html</b>
+    <pre>
+        <code class="language-html">
+            &lt;!DOCTYPE html&gt;
+            &lt;html lang=&quot;en&quot;&gt;
+                &lt;head&gt;
+                    &lt;meta charset=&quot;UTF-8&quot;&gt;
+                    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+                    &lt;title&gt;My Dark Project&lt;/title&gt;
+                    &lt;link rel=&quot;stylesheet&quot; href=&quot;/style.css&quot;&gt;
+                    &lt;script src=&quot;https://unpkg.com/htmx.org&quot;&gt;&lt;/script&gt;
+                &lt;/head&gt;
+                &lt;body&gt;
+                    &lt;div class=&quot;full-image-container&quot;&gt;
+                        &lt;img src=&quot;media/duplicate_header.png&quot; alt=&quot;Full size image&quot; class=&quot;full-image&quot;&gt;
+                        &lt;button 
+                        hx-get=&quot;/posts/building-my-htmx-blog.html&quot; 
+                        hx-target=&quot;#content&quot; 
+                        hx-trigger=&quot;keyup[key==&#039;Escape&#039;] from:body&quot;&gt;
+                        X&lt;/button&gt;
+                    &lt;/div&gt;
+                &lt;/body&gt;
+            &lt;/html&gt; 
+        </code>
+    </pre>
+
+    <p>So it's cool an all to be able to click and expand the thumbnail, but once you've started scrolling down the post, 
+        you lose your position when you return from the fake lightbox. 
+        That alone makes this pretty useless IMO, but it was cool to experiment with. 
+        I think there is probably other ways to experiment with this which would require less templatey copy&pasting ~ 
+        like maybe creating a section nested within the page... Let's try it!
+    </p>
+
+    <section id="test-thumbnail">
+        <a hx-get="media/duck_thumbnail.html"
+            hx-target="#test-thumbnail" 
+            hx-trigger="load">
+           </a>
+    </section>
+
+    <p>Wow that's considerably better. Here's how the code looks:</p>
+
+    <b>Thumbnail Section and htmx element (inline in this post)</b>
+    <pre>
+        <code class="language-html">
+            &lt;section id=&quot;test-thumbnail&quot;&gt;
+                &lt;a hx-get=&quot;media/duck_thumbnail.html&quot;
+                    hx-target=&quot;#test-thumbnail&quot; 
+                    hx-trigger=&quot;load&quot;&gt;
+                   &lt;/a&gt;
+            &lt;/section&gt;
+        </code>
+    </pre>
+
+    <b>duck_thumbnail.html</b>
+    <pre>
+        <code class="language-html">
+            &lt;a href=&quot;#&quot; 
+                hx-get=&quot;media/duck.html&quot; 
+                hx-target=&quot;#test-thumbnail&quot; 
+                hx-trigger=&quot;click&quot;&gt;
+                &lt;img src=&quot;media/duck.png&quot; style=&quot;max-width: 20%&quot; alt=&quot;duck thumbnail&quot; class=&quot;image-thumbnail&quot;&gt;
+            &lt;/a&gt;
+        </code>
+    </pre>
+
+    <b>duck.html</b>
+    <pre>
+        <code class="language-html">
+            &lt;!-- Re-Insert the image below so that when this html file loads and replaces the previous section, we still have continuity and represent this image on the page--&gt;
+            &lt;img src=&quot;media/duck.png&quot; style=&quot;max-width: 20%&quot; alt=&quot;duck thumbnail&quot; class=&quot;image-thumbnail&quot;&gt;
+            &lt;div class=&quot;full-image-container&quot;&gt;
+                &lt;img src=&quot;media/duck.png&quot; alt=&quot;Full size image&quot; class=&quot;full-image&quot;&gt;
+                &lt;button 
+                    hx-get=&quot;media/duck_thumbnail.html&quot; 
+                    hx-target=&quot;#test-thumbnail&quot; 
+                    hx-trigger=&quot;click, keyup[key==&#039;Escape&#039;] from:body&quot;&gt;
+                    X
+                &lt;/button&gt;
+            &lt;/div&gt;
+        </code>
+    </pre>
+
+    <p>This is still a lot more effort than just dropping an image tag in with the source path... But the effect is pretty cool. 
+        I'm actually very pleased with this second go around, especially considering my simple Q&A of ChatGPT to get an improved 
+        lightbox effect without javascript yielded nothing better than the first implementation! </p>
+
+    <h3>LGTM!</h3>
+    <p>At risk of spending too much time tinkering, I'm going to call this a wrap. Maybe a part 1. 
+        TBD, I'm going to clean this up and commit it and try to deploy it via Github Pages to make it live and make it real. 
+        I'm sure I am not alone in finding it satisfying to be able to direct any computer to a website to see something I made, however trivial, 
+        and further, getting this thing live just makes it easier and more fun to continue working on it in follow up!
+    </p>
+        
+        
+        
     
-    <h2>Creating the Blog Structure</h2>
-    <p>The blog structure is straightforward. The main page lists blog posts with summaries. Each post can be clicked to view the full content. I used HTMX to make these links load the post content into the main content area without a full page reload, creating a single-page application (SPA) feel without the complexity.</p>
+        
+
+        
+
     
-    <h2>HTMX in Action</h2>
-    <p>One of the first features I implemented with HTMX was loading blog posts dynamically. By simply adding `hx-get="post1.html"` and `hx-trigger="click"` to a link, I could fetch the post's HTML content and display it within a specified target area. This not only improved the user experience but also reduced the load on the server.</p>
-    
-    <h2>Styling Challenges and Triumphs</h2>
-    <p>Styling the blog was both a challenge and a rewarding process. Achieving a layout that was both aesthetically pleasing and functional on mobile devices required a lot of tweaking, especially with CSS grid and flex properties. However, through experimentation and leveraging CSS's powerful selectors and properties, I was able to create a design that I'm proud of.</p>
-    
-    <p>In conclusion, using HTMX and CSS to build my blog from scratch was a fantastic learning experience. It taught me a lot about web development, and I ended up with a fast, responsive, and interactive blog that met all my requirements. I highly encourage other developers to explore these tools and consider them for their projects.</p>
+        
+
 </article>
